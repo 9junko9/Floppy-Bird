@@ -6,10 +6,10 @@ img.src = "./media/flappy-bird-set.png";
 //general settings
 
 let gamePlaying = false;
-const gravity = 0.5;
-const speed = 6.2;
+const gravity = 0.4;
+const speed = 5.2;
 const size = [51, 36];
-const jump = -11.5;
+const jump = -7.5;
 const cTenth = canvas.width / 10;
 
 //pipe settings
@@ -126,8 +126,35 @@ const render = () => {
         pipeWidth,
         canvas.height - pipe[1] + pipeGap
       );
+
+      if (pipe[0] <= -pipeWidth) {
+        currentScore++;
+        bestScore = Math.max(bestScore, currentScore);
+
+        //remove pipe + create new one
+        pipes = [
+          ...pipes.slice(1),
+          [pipes[pipes.length - 1][0] + pipeGap + pipeWidth, pipeLoc()],
+        ];
+      }
+      // hit the pipe
+      if (
+        [
+          pipe[0] <= cTenth + size[0],
+          pipe[0] + pipeWidth >= cTenth,
+          pipe[1] > flyHeight || pipe[1] + pipeGap < flyHeight + size[1],
+        ].every((elem) => elem)
+      ) {
+        gamePlaying = false;
+        setup();
+      }
     });
   }
+
+  document.getElementById(`bestScore`).innerHTML = `Meilleur : ${bestScore}`;
+  document.getElementById(
+    `currentScore`
+  ).innerHTML = `Actuel : ${currentScore}`;
 
   window.requestAnimationFrame(render);
 };
